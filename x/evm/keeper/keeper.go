@@ -62,6 +62,9 @@ type Keeper struct {
 
 	// error from previous state operation
 	stateErr error
+
+	// add
+	Signer ethtypes.Signer
 }
 
 // NewKeeper generates new evm module keeper

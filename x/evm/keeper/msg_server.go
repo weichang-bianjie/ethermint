@@ -28,7 +28,14 @@ func (k *Keeper) EthereumTx(goCtx context.Context, msg *types.MsgEthereumTx) (*t
 	sender := msg.From
 	tx := msg.AsTransaction()
 
-	response, err := k.ApplyTransaction(tx)
+	var response *types.MsgEthereumTxResponse
+	var err error
+	if k.Signer == nil {
+		response, err = k.ApplyTransaction(tx)
+	} else {
+		response, err = k.ApplyTransactionsm2(msg)
+	}
+
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "failed to apply transaction")
 	}

@@ -184,18 +184,15 @@ func (msg *MsgEthereumTx) GetMsgs() []sdk.Msg {
 //
 // NOTE: This method panics if 'Sign' hasn't been called first.
 func (msg *MsgEthereumTx) GetSigners() []sdk.AccAddress {
-	data, err := UnpackTxData(msg.Data)
-	if err != nil {
-		panic(err)
+	if len(msg.From) < 1 {
+		panic("do not have signers")
+	}
+	var addr common.Address
+	if common.IsHexAddress(msg.From) {
+		addr = common.HexToAddress(msg.From)
 	}
 
-	sender, err := msg.GetSender(data.GetChainID())
-	if err != nil {
-		panic(err)
-	}
-
-	signer := sdk.AccAddress(sender.Bytes())
-	return []sdk.AccAddress{signer}
+	return []sdk.AccAddress{addr.Bytes()}
 }
 
 // GetSignBytes returns the Amino bytes of an Ethereum transaction message used
@@ -267,19 +264,35 @@ func (msg MsgEthereumTx) AsTransaction() *ethtypes.Transaction {
 
 // AsMessage creates an Ethereum core.Message from the msg fields
 func (msg MsgEthereumTx) AsMessage(signer ethtypes.Signer, baseFee *big.Int) (core.Message, error) {
-	return msg.AsTransaction().AsMessage(signer, baseFee)
+	tx := msg.AsTransaction()
+	ethMsg := ethtypes.NewMessage(
+		common.HexToAddress(msg.From),
+		tx.To(),
+		tx.Nonce(),
+		tx.Value(),
+		tx.Gas(),
+		new(big.Int).Set(tx.GasPrice()),
+		new(big.Int).Set(tx.GasFeeCap()),
+		new(big.Int).Set(tx.GasTipCap()),
+		tx.Data(),
+		tx.AccessList(),
+		false,
+	)
+
+	return ethMsg, nil
 }
 
 // GetSender extracts the sender address from the signature values using the latest signer for the given chainID.
 func (msg *MsgEthereumTx) GetSender(chainID *big.Int) (common.Address, error) {
-	signer := ethtypes.LatestSignerForChainID(chainID)
-	from, err := signer.Sender(msg.AsTransaction())
-	if err != nil {
-		return common.Address{}, err
+	if len(msg.From) < 1 {
+		panic("do not have signers")
+	}
+	var addr common.Address
+	if common.IsHexAddress(msg.From) {
+		addr = common.HexToAddress(msg.From)
 	}
 
-	msg.From = from.Hex()
-	return from, nil
+	return addr, nil
 }
 
 // UnpackInterfaces implements UnpackInterfacesMesssage.UnpackInterfaces

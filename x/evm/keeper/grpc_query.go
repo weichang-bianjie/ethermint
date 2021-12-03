@@ -367,7 +367,12 @@ func (k Keeper) TraceTx(c context.Context, req *types.QueryTraceTxRequest) (*typ
 
 	params := k.GetParams(ctx)
 	ethCfg := params.ChainConfig.EthereumConfig(k.eip155ChainID)
-	signer := ethtypes.MakeSigner(ethCfg, big.NewInt(ctx.BlockHeight()))
+	var signer ethtypes.Signer
+	if k.Signer == nil {
+		signer = ethtypes.MakeSigner(ethCfg, big.NewInt(ctx.BlockHeight()))
+	} else {
+		signer = k.Signer
+	}
 	baseFee := k.feeMarketKeeper.GetBaseFee(ctx)
 
 	for i, tx := range req.Predecessors {
@@ -421,7 +426,13 @@ func (k Keeper) TraceBlock(c context.Context, req *types.QueryTraceBlockRequest)
 
 	params := k.GetParams(ctx)
 	ethCfg := params.ChainConfig.EthereumConfig(k.eip155ChainID)
-	signer := ethtypes.MakeSigner(ethCfg, big.NewInt(ctx.BlockHeight()))
+	var signer ethtypes.Signer
+	if k.Signer == nil {
+		signer = ethtypes.MakeSigner(ethCfg, big.NewInt(ctx.BlockHeight()))
+	} else {
+		signer = k.Signer
+	}
+
 	baseFee := k.feeMarketKeeper.GetBaseFee(ctx)
 
 	txsLength := len(req.Txs)
