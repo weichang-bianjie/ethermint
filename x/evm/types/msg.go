@@ -185,7 +185,18 @@ func (msg *MsgEthereumTx) GetMsgs() []sdk.Msg {
 // NOTE: This method panics if 'Sign' hasn't been called first.
 func (msg *MsgEthereumTx) GetSigners() []sdk.AccAddress {
 	if len(msg.From) < 1 {
-		panic("do not have signers")
+		data, err := UnpackTxData(msg.Data)
+		if err != nil {
+			panic(err)
+		}
+
+		sender, err := msg.GetSender(data.GetChainID())
+		if err != nil {
+			panic(err)
+		}
+
+		signer := sdk.AccAddress(sender.Bytes())
+		return []sdk.AccAddress{signer}
 	}
 	var addr common.Address
 	if common.IsHexAddress(msg.From) {
@@ -285,7 +296,14 @@ func (msg MsgEthereumTx) AsMessage(signer ethtypes.Signer, baseFee *big.Int) (co
 // GetSender extracts the sender address from the signature values using the latest signer for the given chainID.
 func (msg *MsgEthereumTx) GetSender(chainID *big.Int) (common.Address, error) {
 	if len(msg.From) < 1 {
-		panic("do not have signers")
+		signer := ethtypes.LatestSignerForChainID(chainID)
+		from, err := signer.Sender(msg.AsTransaction())
+		if err != nil {
+			return common.Address{}, err
+		}
+
+		msg.From = from.Hex()
+		return from, nil
 	}
 	var addr common.Address
 	if common.IsHexAddress(msg.From) {
