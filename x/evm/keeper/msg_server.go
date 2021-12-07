@@ -5,6 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/tharsis/ethermint/crypto/ethsecp256k1"
+
+	"github.com/ethereum/go-ethereum/common"
+
 	"github.com/palantir/stacktrace"
 
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
@@ -30,7 +34,16 @@ func (k *Keeper) EthereumTx(goCtx context.Context, msg *types.MsgEthereumTx) (*t
 
 	var response *types.MsgEthereumTxResponse
 	var err error
-	if k.Signer == nil {
+	// determine the algorithm type of the key
+	/*****
+	* sheldon@bianjie.ai
+	**/
+	ethAddr := common.HexToAddress(sender)
+	cosmosAddr := sdk.AccAddress(ethAddr.Bytes())
+	account := k.accountKeeper.GetAccount(ctx, cosmosAddr)
+	pubKeyAlgo := account.GetPubKey().Type()
+
+	if pubKeyAlgo == ethsecp256k1.KeyType {
 		response, err = k.ApplyTransaction(tx)
 	} else {
 		response, err = k.ApplyTransactionsm2(msg)
