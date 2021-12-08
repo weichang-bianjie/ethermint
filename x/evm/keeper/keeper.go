@@ -63,8 +63,12 @@ type Keeper struct {
 	// error from previous state operation
 	stateErr error
 
-	// add
-	Signer ethtypes.Signer
+	/*
+	*
+	* sheldon@bianjie.ai
+	**/
+	Signer           ethtypes.Signer
+	OpbAuthorization func(ctx sdk.Context, denom string, sender string) bool
 }
 
 // NewKeeper generates new evm module keeper
