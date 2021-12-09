@@ -87,17 +87,6 @@ func (k *Keeper) AddBalance(addr common.Address, amount *big.Int) {
 		},
 	}
 
-	if k.OpbAuthorization != nil && !k.OpbAuthorization(ctx, params.EvmDenom, cosmosAddr.String()) {
-
-		k.Logger(ctx).Debug(
-			"either the sender or recipient must be the owner",
-			"ethereum-address", addr.Hex(),
-			"cosmos-address", cosmosAddr.String(),
-			"token", params.EvmDenom,
-		)
-		return
-	}
-
 	if err := k.bankKeeper.MintCoins(ctx, types.ModuleName, coins); err != nil {
 		k.Logger(ctx).Error(
 			"failed to mint coins when adding balance",
@@ -157,16 +146,6 @@ func (k *Keeper) SubBalance(addr common.Address, amount *big.Int) {
 			Denom:  params.EvmDenom,
 			Amount: sdk.NewIntFromBigInt(amount),
 		},
-	}
-	if k.OpbAuthorization != nil && !k.OpbAuthorization(ctx, params.EvmDenom, cosmosAddr.String()) {
-
-		k.Logger(ctx).Debug(
-			"either the sender or recipient must be the owner",
-			"ethereum-address", addr.Hex(),
-			"cosmos-address", cosmosAddr.String(),
-			"token", params.EvmDenom,
-		)
-		return
 	}
 
 	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, cosmosAddr, types.ModuleName, coins); err != nil {

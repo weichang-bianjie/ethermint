@@ -55,7 +55,8 @@ func (k *Keeper) NewEVM(
 	tracer vm.Tracer,
 ) *vm.EVM {
 	blockCtx := vm.BlockContext{
-		CanTransfer: core.CanTransfer,
+		//CanTransfer: core.CanTransfer,
+		CanTransfer: k.CanTransferFunc,
 		Transfer:    core.Transfer,
 		GetHash:     k.GetHashFn(),
 		Coinbase:    cfg.CoinBase,
