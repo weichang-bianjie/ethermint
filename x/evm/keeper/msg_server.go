@@ -41,7 +41,11 @@ func (k *Keeper) EthereumTx(goCtx context.Context, msg *types.MsgEthereumTx) (*t
 	ethAddr := common.HexToAddress(sender)
 	cosmosAddr := sdk.AccAddress(ethAddr.Bytes())
 	account := k.accountKeeper.GetAccount(ctx, cosmosAddr)
-	pubKeyAlgo := account.GetPubKey().Type()
+	pubKey := account.GetPubKey()
+	if pubKey == nil {
+		return nil, stacktrace.Propagate(types.ErrCallDisabled, "can not get publicKey for address : %s", cosmosAddr)
+	}
+	pubKeyAlgo := pubKey.Type()
 
 	if pubKeyAlgo == ethsecp256k1.KeyType {
 		response, err = k.ApplyTransaction(tx)
