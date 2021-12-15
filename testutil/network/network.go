@@ -318,7 +318,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 				appCfg.JSONRPC.Address = fmt.Sprintf("0.0.0.0:%s", jsonRPCPort)
 			}
 			appCfg.JSONRPC.Enable = true
-			appCfg.JSONRPC.API = config.GetDefaultAPINamespaces()
+			appCfg.JSONRPC.API = config.GetAPINamespaces()
 		}
 
 		logger := log.NewNopLogger()
@@ -334,12 +334,12 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 		clientDir := filepath.Join(network.BaseDir, nodeDirName, "evmoscli")
 		gentxsDir := filepath.Join(network.BaseDir, "gentxs")
 
-		err := os.MkdirAll(filepath.Join(nodeDir, "config"), 0o755)
+		err := os.MkdirAll(filepath.Join(nodeDir, "config"), 0o750)
 		if err != nil {
 			return nil, err
 		}
 
-		err = os.MkdirAll(clientDir, 0o755)
+		err = os.MkdirAll(clientDir, 0o750)
 		if err != nil {
 			return nil, err
 		}

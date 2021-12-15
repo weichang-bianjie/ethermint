@@ -10,11 +10,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/palantir/stacktrace"
-
+  
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/tharsis/ethermint/x/evm/types"
 )
@@ -54,7 +55,7 @@ func (k *Keeper) EthereumTx(goCtx context.Context, msg *types.MsgEthereumTx) (*t
 	}
 
 	if err != nil {
-		return nil, stacktrace.Propagate(err, "failed to apply transaction")
+		return nil, sdkerrors.Wrap(err, "failed to apply transaction")
 	}
 
 	attrs := []sdk.Attribute{
@@ -81,7 +82,7 @@ func (k *Keeper) EthereumTx(goCtx context.Context, msg *types.MsgEthereumTx) (*t
 	for _, log := range response.Logs {
 		value, err := json.Marshal(log)
 		if err != nil {
-			return nil, stacktrace.Propagate(err, "failed to encode log")
+			return nil, sdkerrors.Wrap(err, "failed to encode log")
 		}
 		txLogAttrs = append(txLogAttrs, sdk.NewAttribute(types.AttributeKeyTxLog, string(value)))
 	}
