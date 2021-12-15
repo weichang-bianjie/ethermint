@@ -67,7 +67,7 @@ type Keeper struct {
 	*
 	* sheldon@bianjie.ai
 	**/
-	Signer           ethtypes.Signer
+	Signer ethtypes.Signer
 	//OpbAuthorization func(ctx sdk.Context, denom string, sender string) bool
 	CanTransferFunc func(db vm.StateDB, addr common.Address, amount *big.Int) bool
 }
@@ -132,7 +132,7 @@ func (k *Keeper) WithContext(ctx sdk.Context) {
 
 // WithChainID sets the chain id to the local variable in the keeper
 func (k *Keeper) WithChainID(ctx sdk.Context) {
-	chainID, err := ethermint.ParseChainID(ctx.ChainID())
+	chainID, err := ethermint.IritaParseChainID(ctx.ChainID())
 	if err != nil {
 		panic(err)
 	}

@@ -56,7 +56,7 @@ func NewPublicAPI(
 	backend backend.Backend,
 	nonceLock *rpctypes.AddrLocker,
 ) *PublicAPI {
-	eip155ChainID, err := ethermint.ParseChainID(clientCtx.ChainID)
+	eip155ChainID, err := ethermint.IritaParseChainID(clientCtx.ChainID)
 	if err != nil {
 		panic(err)
 	}

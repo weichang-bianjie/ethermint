@@ -101,7 +101,7 @@ type EVMBackend struct {
 
 // NewEVMBackend creates a new EVMBackend instance
 func NewEVMBackend(ctx *server.Context, logger log.Logger, clientCtx client.Context) *EVMBackend {
-	chainID, err := ethermint.ParseChainID(clientCtx.ChainID)
+	chainID, err := ethermint.IritaParseChainID(clientCtx.ChainID)
 	if err != nil {
 		panic(err)
 	}
