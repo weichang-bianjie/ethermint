@@ -67,9 +67,8 @@ type Keeper struct {
 	*
 	* sheldon@bianjie.ai
 	**/
-	Signer ethtypes.Signer
-	//OpbAuthorization func(ctx sdk.Context, denom string, sender string) bool
-	CanTransferFunc func(db vm.StateDB, addr common.Address, amount *big.Int) bool
+	Signer       ethtypes.Signer
+	TransferFunc func(db vm.StateDB, sender, recipient common.Address, amount *big.Int)
 }
 
 // NewKeeper generates new evm module keeper
