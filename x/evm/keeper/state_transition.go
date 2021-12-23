@@ -54,9 +54,9 @@ func (k *Keeper) NewEVM(
 	tracer vm.Tracer,
 ) *vm.EVM {
 	blockCtx := vm.BlockContext{
-		//CanTransfer: core.CanTransfer,
-		CanTransfer: k.CanTransferFunc,
-		Transfer:    core.Transfer,
+		CanTransfer: core.CanTransfer,
+		//Transfer:    core.Transfer,
+		Transfer:    k.TransferFunc,
 		GetHash:     k.GetHashFn(),
 		Coinbase:    cfg.CoinBase,
 		GasLimit:    ethermint.BlockGasLimit(k.Ctx()),
