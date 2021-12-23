@@ -42,6 +42,8 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
+require github.com/palantir/stacktrace v0.0.0-20161112013806-78658fd2d177
+
 require (
 	filippo.io/edwards25519 v1.0.0-beta.2 // indirect
 	github.com/99designs/keyring v1.1.6 // indirect
