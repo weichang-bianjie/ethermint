@@ -25,7 +25,8 @@ func IsValidChainID(chainID string) bool {
 		return false
 	}
 
-	return ethermintChainID.MatchString(chainID)
+	//return ethermintChainID.MatchString(chainID)
+	return iritaChainId.MatchString(chainID)
 }
 
 // IsValidChainIDForIrita returns false if the given chain identifier is incorrectly formatted.
