@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"math/big"
 
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
+	gogotypes "github.com/gogo/protobuf/types"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -43,7 +45,7 @@ func (k *Keeper) CreateAccount(addr common.Address) {
 		k.ResetAccount(addr)
 	}
 
-	account = k.accountKeeper.NewAccountWithAddress(ctx, cosmosAddr)
+	account = k.NewAccountWithAddress(ctx, cosmosAddr)
 	k.accountKeeper.SetAccount(ctx, account)
 
 	k.Logger(ctx).Debug(
@@ -242,7 +244,7 @@ func (k *Keeper) SetNonce(addr common.Address, nonce uint64) {
 		)
 
 		// create address if it doesn't exist
-		account = k.accountKeeper.NewAccountWithAddress(ctx, cosmosAddr)
+		account = k.NewAccountWithAddress(ctx, cosmosAddr)
 	}
 
 	if err := account.SetSequence(nonce); err != nil {
@@ -339,7 +341,7 @@ func (k *Keeper) SetCode(addr common.Address, code []byte) {
 	// update account code hash
 	account := k.accountKeeper.GetAccount(ctx, addr.Bytes())
 	if account == nil {
-		account = k.accountKeeper.NewAccountWithAddress(ctx, addr.Bytes())
+		account = k.NewAccountWithAddress(ctx, addr.Bytes())
 		k.accountKeeper.SetAccount(ctx, account)
 	}
 
@@ -841,4 +843,53 @@ func (k *Keeper) HasStateError() bool {
 // ClearStateError reset the previous state operation error to nil
 func (k *Keeper) ClearStateError() {
 	k.stateErr = nil
+}
+
+func (k *Keeper) NewAccountWithAddress(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI {
+	acc := ethermint.ProtoAccount()
+
+	err := acc.SetAddress(addr)
+	if err != nil {
+		panic(err)
+	}
+
+	return k.NewAccount(ctx, acc)
+}
+
+// NewAccount sets the next account number to a given account interface
+func (k *Keeper) NewAccount(ctx sdk.Context, acc authtypes.AccountI) authtypes.AccountI {
+	if err := acc.SetAccountNumber(k.GetNextAccountNumber(ctx)); err != nil {
+		panic(err)
+	}
+	//authtypes.StoreKey
+
+	return acc
+}
+
+// GetNextAccountNumber returns and increments the global account number counter.
+// If the global account number is not set, it initializes it with value 0.
+func (k *Keeper) GetNextAccountNumber(ctx sdk.Context) uint64 {
+	var accNumber uint64
+
+	store := ctx.KVStore(k.AccStoreKey)
+
+	bz := store.Get(authtypes.GlobalAccountNumberKey)
+	if bz == nil {
+		// initialize the account numbers
+		accNumber = 0
+	} else {
+		val := gogotypes.UInt64Value{}
+
+		err := k.cdc.Unmarshal(bz, &val)
+		if err != nil {
+			panic(err)
+		}
+
+		accNumber = val.GetValue()
+	}
+
+	bz = k.cdc.MustMarshal(&gogotypes.UInt64Value{Value: accNumber + 1})
+	store.Set(authtypes.GlobalAccountNumberKey, bz)
+
+	return accNumber
 }
