@@ -9,8 +9,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/palantir/stacktrace"
-  
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	tmtypes "github.com/tendermint/tendermint/types"
 
@@ -44,14 +42,19 @@ func (k *Keeper) EthereumTx(goCtx context.Context, msg *types.MsgEthereumTx) (*t
 	account := k.accountKeeper.GetAccount(ctx, cosmosAddr)
 	pubKey := account.GetPubKey()
 	if pubKey == nil {
-		return nil, stacktrace.Propagate(types.ErrCallDisabled, "can not get publicKey for address : %s", cosmosAddr)
-	}
-	pubKeyAlgo := pubKey.Type()
-
-	if pubKeyAlgo == ethsecp256k1.KeyType {
+		k.Logger(ctx).Debug(
+			"cosmos_addr", cosmosAddr.String(),
+			"info_msg", "can not get publicKey for address",
+		)
 		response, err = k.ApplyTransaction(tx)
 	} else {
-		response, err = k.ApplyTransactionsm2(msg)
+		pubKeyAlgo := pubKey.Type()
+
+		if pubKeyAlgo == ethsecp256k1.KeyType {
+			response, err = k.ApplyTransaction(tx)
+		} else {
+			response, err = k.ApplyTransactionsm2(msg)
+		}
 	}
 
 	if err != nil {

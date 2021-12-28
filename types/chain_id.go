@@ -19,6 +19,10 @@ var (
 	iritaChainId         = regexp.MustCompile(fmt.Sprintf(`^(%s)%s(%s)$`, regexChainID, regexEpochSeparator, regexEIP155))
 )
 
+const defaultChainID = 1223
+
+var EvmChainID uint64 = defaultChainID
+
 // IsValidChainID returns false if the given chain identifier is incorrectly formatted.
 func IsValidChainID(chainID string) bool {
 	if len(chainID) > 48 {
@@ -26,16 +30,7 @@ func IsValidChainID(chainID string) bool {
 	}
 
 	//return ethermintChainID.MatchString(chainID)
-	return iritaChainId.MatchString(chainID)
-}
-
-// IsValidChainIDForIrita returns false if the given chain identifier is incorrectly formatted.
-func IsValidChainIDForIrita(chainID string) bool {
-	if len(chainID) > 48 {
-		return false
-	}
-
-	return iritaChainId.MatchString(chainID)
+	return true
 }
 
 // ParseChainID parses a string chain identifier's epoch to an Ethereum-compatible
@@ -46,34 +41,22 @@ func ParseChainID(chainID string) (*big.Int, error) {
 		return nil, sdkerrors.Wrapf(ErrInvalidChainID, "chain-id '%s' cannot exceed 48 chars", chainID)
 	}
 
-	matches := ethermintChainID.FindStringSubmatch(chainID)
-	if matches == nil || len(matches) != 4 || matches[1] == "" {
-		return nil, sdkerrors.Wrapf(ErrInvalidChainID, "%s: %v", chainID, matches)
-	}
+	//matches := ethermintChainID.FindStringSubmatch(chainID)
+	//if matches == nil || len(matches) != 4 || matches[1] == "" {
+	//	return nil, sdkerrors.Wrapf(ErrInvalidChainID, "%s: %v", chainID, matches)
+	//}
+
+	//matches := iritaChainId.FindStringSubmatch(chainID)
+	//if matches == nil || len(matches) != 3 || matches[1] == "" {
+	//	return nil, sdkerrors.Wrapf(ErrInvalidChainID, "%s: %v", chainID, matches)
+	//}
+	//
 
 	// verify that the chain-id entered is a base 10 integer
-	chainIDInt, ok := new(big.Int).SetString(matches[2], 10)
-	if !ok {
-		return nil, sdkerrors.Wrapf(ErrInvalidChainID, "epoch %s must be base-10 integer format", matches[2])
-	}
+	//chainIDInt, ok := new(big.Int).SetString(matches[2], 10)
+	//if !ok {
+	//	return nil, sdkerrors.Wrapf(ErrInvalidChainID, "epoch %s must be base-10 integer format", matches[2])
+	//}
 
-	return chainIDInt, nil
-}
-
-func IritaParseChainID(chainID string) (*big.Int, error) {
-	chainID = strings.TrimSpace(chainID)
-	if len(chainID) > 48 {
-		return nil, sdkerrors.Wrapf(ErrInvalidChainID, "chain-id '%s' cannot exceed 48 chars", chainID)
-	}
-	matches := iritaChainId.FindStringSubmatch(chainID)
-	if matches == nil || len(matches) != 3 || matches[1] == "" {
-		return nil, sdkerrors.Wrapf(ErrInvalidChainID, "%s: %v", chainID, matches)
-	}
-	// verify that the chain-id entered is a base 10 integer
-	chainIDInt, ok := new(big.Int).SetString(matches[2], 10)
-	if !ok {
-		return nil, sdkerrors.Wrapf(ErrInvalidChainID, "epoch %s must be base-10 integer format", matches[2])
-	}
-
-	return chainIDInt, nil
+	return new(big.Int).SetUint64(EvmChainID), nil
 }

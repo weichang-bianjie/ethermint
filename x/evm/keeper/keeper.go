@@ -132,7 +132,7 @@ func (k *Keeper) WithContext(ctx sdk.Context) {
 
 // WithChainID sets the chain id to the local variable in the keeper
 func (k *Keeper) WithChainID(ctx sdk.Context) {
-	chainID, err := ethermint.IritaParseChainID(ctx.ChainID())
+	chainID, err := ethermint.ParseChainID(ctx.ChainID())
 	if err != nil {
 		panic(err)
 	}
