@@ -426,6 +426,12 @@ func (k *Keeper) GasToRefund(gasConsumed, refundQuotient uint64) uint64 {
 func (k *Keeper) RefundGas(msg core.Message, leftoverGas uint64, denom string) error {
 	// Return EVM tokens for remaining gas, exchanged at the original rate.
 	remaining := new(big.Int).Mul(new(big.Int).SetUint64(leftoverGas), msg.GasPrice())
+	/*****
+	* sheldon@bianjie.ai
+	* Multiply by a factor
+	**/
+
+	remaining.Mul(remaining, IritaCoefficient)
 
 	switch remaining.Sign() {
 	case -1:
