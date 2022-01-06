@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/big"
 	"regexp"
+	"strconv"
 	"strings"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -19,9 +20,7 @@ var (
 	iritaChainId         = regexp.MustCompile(fmt.Sprintf(`^(%s)%s(%s)$`, regexChainID, regexEpochSeparator, regexEIP155))
 )
 
-const defaultChainID = 1223
-
-var EvmChainID uint64 = defaultChainID
+var EvmChainID = "1223"
 
 // IsValidChainID returns false if the given chain identifier is incorrectly formatted.
 func IsValidChainID(chainID string) bool {
@@ -58,5 +57,6 @@ func ParseChainID(chainID string) (*big.Int, error) {
 	//	return nil, sdkerrors.Wrapf(ErrInvalidChainID, "epoch %s must be base-10 integer format", matches[2])
 	//}
 
-	return new(big.Int).SetUint64(EvmChainID), nil
+	EvmChainIDInt, _ := strconv.ParseInt(EvmChainID, 10, 64)
+	return new(big.Int).SetUint64(uint64(EvmChainIDInt)), nil
 }
