@@ -426,12 +426,6 @@ func (k *Keeper) GasToRefund(gasConsumed, refundQuotient uint64) uint64 {
 func (k *Keeper) RefundGas(msg core.Message, leftoverGas uint64, denom string) error {
 	// Return EVM tokens for remaining gas, exchanged at the original rate.
 	remaining := new(big.Int).Mul(new(big.Int).SetUint64(leftoverGas), msg.GasPrice())
-	/*****
-	* sheldon@bianjie.ai
-	* Multiply by a factor
-	**/
-
-	remaining.Mul(remaining, IritaCoefficient)
 
 	switch remaining.Sign() {
 	case -1:
@@ -439,6 +433,12 @@ func (k *Keeper) RefundGas(msg core.Message, leftoverGas uint64, denom string) e
 		return sdkerrors.Wrapf(types.ErrInvalidRefund, "refunded amount value cannot be negative %d", remaining.Int64())
 	case 1:
 		// positive amount refund
+		/*****
+		* sheldon@bianjie.ai
+		* Divide by a factor
+		**/
+		remaining.Quo(remaining, IritaCoefficient)
+
 		refundedCoins := sdk.Coins{sdk.NewCoin(denom, sdk.NewIntFromBigInt(remaining))}
 
 		// refund to sender from the fee collector module account, which is the escrow account in charge of collecting tx fees
