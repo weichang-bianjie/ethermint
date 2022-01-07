@@ -11,8 +11,9 @@ import (
 )
 
 var IritaCoefficient = new(big.Int).SetUint64(1000000000000)
+var IritaDeductionCoefficient = new(big.Int).SetUint64(1000000000)
 
-// ApplyTransaction runs and attempts to perform a state transition with the given transaction (i.e Message), that will
+// ApplyTransactionSm2 runs and attempts to perform a state transition with the given transaction (i.e Message), that will
 // only be persisted (committed) to the underlying KVStore if the transaction does not fail.
 //
 // Gas tracking
@@ -29,7 +30,7 @@ var IritaCoefficient = new(big.Int).SetUint64(1000000000000)
 // returning.
 //
 // For relevant discussion see: https://github.com/cosmos/cosmos-sdk/discussions/9072
-func (k *Keeper) ApplyTransactionsm2(tx *types.MsgEthereumTx) (*types.MsgEthereumTxResponse, error) {
+func (k *Keeper) ApplyTransactionSm2(tx *types.MsgEthereumTx) (*types.MsgEthereumTxResponse, error) {
 	ctx := k.Ctx()
 
 	// ensure keeper state error is cleared

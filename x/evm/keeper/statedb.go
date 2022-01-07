@@ -145,12 +145,6 @@ func (k *Keeper) SubBalance(addr common.Address, amount *big.Int) {
 
 	params := k.GetParams(ctx)
 
-	/*****
-	* sheldon@bianjie.ai
-	* Divide by a factor
-	**/
-
-	amount.Quo(amount, IritaCoefficient)
 	// Coin denom and amount already validated
 	coins := sdk.Coins{
 		{

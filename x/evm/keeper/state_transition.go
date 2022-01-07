@@ -436,6 +436,8 @@ func (k *Keeper) RefundGas(msg core.Message, leftoverGas uint64, denom string) e
 		/*****
 		* sheldon@bianjie.ai
 		* Divide by a factor
+		* 1 Gwei = 1e9
+		* 1 uirita = 1e12
 		**/
 		remaining.Quo(remaining, IritaCoefficient)
 

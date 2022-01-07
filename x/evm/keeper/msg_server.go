@@ -53,7 +53,7 @@ func (k *Keeper) EthereumTx(goCtx context.Context, msg *types.MsgEthereumTx) (*t
 		if pubKeyAlgo == ethsecp256k1.KeyType {
 			response, err = k.ApplyTransaction(tx)
 		} else {
-			response, err = k.ApplyTransactionsm2(msg)
+			response, err = k.ApplyTransactionSm2(msg)
 		}
 	}
 

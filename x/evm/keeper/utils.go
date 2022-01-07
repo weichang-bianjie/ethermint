@@ -74,9 +74,12 @@ func (k Keeper) DeductTxCostsFromUserBalance(
 	/*****
 	* sheldon@bianjie.ai
 	* Divide by a factor
+	* 1 Gwei = 1e9 wei
+	* 1 uirita = 1e12 wei
+	* 1 uirita = 1e3 Gwei
 	**/
 
-	feeAmt.Quo(feeAmt, IritaCoefficient)
+	feeAmt.Quo(feeAmt, IritaDeductionCoefficient)
 
 	fees := sdk.Coins{sdk.NewCoin(denom, sdk.NewIntFromBigInt(feeAmt))}
 
