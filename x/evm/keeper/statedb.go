@@ -48,6 +48,7 @@ func (k *Keeper) CreateAccount(addr common.Address) {
 	/*****
 	* sheldon@bianjie.ai
 	**/
+	k.accountKeeper.NewAccountWithAddress()
 	account = k.NewAccountWithAddress(ctx, cosmosAddr)
 	k.accountKeeper.SetAccount(ctx, account)
 

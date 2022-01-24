@@ -11,7 +11,6 @@ import (
 )
 
 var IritaCoefficient = new(big.Int).SetUint64(1000000000000)
-var IritaDeductionCoefficient = new(big.Int).SetUint64(1000000000)
 
 // ApplyTransactionSm2 runs and attempts to perform a state transition with the given transaction (i.e Message), that will
 // only be persisted (committed) to the underlying KVStore if the transaction does not fail.
