@@ -38,6 +38,8 @@ import (
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 )
 
+var IritaCoefficient = new(big.Int).SetUint64(1000000000000)
+
 // PublicAPI is the eth_ prefixed set of APIs in the Web3 JSON-RPC spec.
 type PublicAPI struct {
 	ctx          context.Context
@@ -450,6 +452,10 @@ func (e *PublicAPI) SendRawTransaction(data hexutil.Bytes) (common.Hash, error) 
 	if err := ethereumTx.FromEthereumTx(tx); err != nil {
 		e.logger.Error("transaction converting failed", "error", err.Error())
 		return common.Hash{}, err
+	}
+	gasPrice := new(big.Int).Set(tx.GasPrice())
+	if gasPrice.Cmp(IritaCoefficient) == -1 {
+		return common.Hash{}, errors.New("failed to gasPrice")
 	}
 
 	if err := ethereumTx.ValidateBasic(); err != nil {
