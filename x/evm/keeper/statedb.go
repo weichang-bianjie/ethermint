@@ -195,14 +195,7 @@ func (k *Keeper) GetBalance(addr common.Address) *big.Int {
 	params := k.GetParams(ctx)
 	balance := k.bankKeeper.GetBalance(ctx, cosmosAddr, params.EvmDenom)
 
-	/*****
-	* sheldon@bianjie.ai
-	* Multiply by a factor
-	**/
-	balanceBigInt := balance.Amount.BigInt()
-	balanceBigInt.Mul(balanceBigInt, IritaCoefficient)
-
-	return balanceBigInt
+	return balance.Amount.BigInt()
 }
 
 // ----------------------------------------------------------------------------
