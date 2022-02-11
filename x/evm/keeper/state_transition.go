@@ -432,14 +432,6 @@ func (k *Keeper) RefundGas(msg core.Message, leftoverGas uint64, denom string) e
 		// negative refund errors
 		return sdkerrors.Wrapf(types.ErrInvalidRefund, "refunded amount value cannot be negative %d", remaining.Int64())
 	case 1:
-		// positive amount refund
-		/*****
-		* sheldon@bianjie.ai
-		* Divide by a factor
-		* 1 Gwei = 1e9
-		* 1 uirita = 1e12
-		**/
-		remaining.Quo(remaining, IritaCoefficient)
 
 		refundedCoins := sdk.Coins{sdk.NewCoin(denom, sdk.NewIntFromBigInt(remaining))}
 

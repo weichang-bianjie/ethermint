@@ -71,15 +71,6 @@ func (k Keeper) DeductTxCostsFromUserBalance(
 
 	gasUsed := new(big.Int).SetUint64(txData.GetGas())
 	feeAmt := new(big.Int).Mul(gasUsed, effectiveTip)
-	/*****
-	* sheldon@bianjie.ai
-	* Divide by a factor
-	* 1 Gwei = 1e9 wei
-	* 1 uirita = 1e12 wei
-	* 1 uirita = 1e3 Gwei
-	**/
-
-	feeAmt.Quo(feeAmt, IritaDeductionCoefficient)
 
 	fees := sdk.Coins{sdk.NewCoin(denom, sdk.NewIntFromBigInt(feeAmt))}
 
@@ -112,11 +103,6 @@ func CheckSenderBalance(
 			"tx cost (%s%s) is negative and invalid", cost, denom,
 		)
 	}
-	/*****
-	* sheldon@bianjie.ai
-	* Divide by a factor
-	**/
-	cost.Quo(cost, IritaCoefficient)
 
 	if balance.IsNegative() || balance.Amount.BigInt().Cmp(cost) < 0 {
 		return sdkerrors.Wrapf(
