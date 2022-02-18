@@ -451,6 +451,12 @@ func (e *PublicAPI) SendRawTransaction(data hexutil.Bytes) (common.Hash, error) 
 		e.logger.Error("transaction converting failed", "error", err.Error())
 		return common.Hash{}, err
 	}
+	minGasPriceInt := new(big.Int).SetInt64(e.backend.RPCMinGasPrice())
+	gasPrice := new(big.Int).Set(tx.GasTipCap())
+	if gasPrice.Cmp(minGasPriceInt) == -1 {
+		return common.Hash{}, fmt.Errorf(
+			"failed to gasPrice %d < %d", gasPrice.Uint64(), minGasPriceInt.Uint64())
+	}
 
 	if err := ethereumTx.ValidateBasic(); err != nil {
 		e.logger.Debug("tx failed basic validation", "error", err.Error())
