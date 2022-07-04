@@ -55,9 +55,8 @@ type Keeper struct {
 	hooks types.EvmHooks
 
 	// sheldon@bianjie.ai
-	Signer       ethtypes.Signer
-	TransferFunc func(db vm.StateDB, sender, recipient common.Address, amount *big.Int)
-	AccStoreKey  sdk.StoreKey
+	Signer      ethtypes.Signer
+	AccStoreKey sdk.StoreKey
 }
 
 // NewKeeper generates new evm module keeper
