@@ -55,6 +55,7 @@ type Keeper struct {
 	hooks types.EvmHooks
 
 	// sheldon@bianjie.ai
+	Transfer    vm.TransferFunc
 	Signer      ethtypes.Signer
 	AccStoreKey sdk.StoreKey
 }
