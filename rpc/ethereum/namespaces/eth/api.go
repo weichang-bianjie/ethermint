@@ -212,6 +212,10 @@ func (e *PublicAPI) GasPrice() (*hexutil.Big, error) {
 		result = big.NewInt(e.backend.RPCMinGasPrice())
 	}
 
+	if result.Cmp(new(big.Int).SetUint64(0)) == 0 {
+		result = big.NewInt(e.backend.RPCMinGasPrice())
+	}
+
 	return (*hexutil.Big)(result), nil
 }
 
